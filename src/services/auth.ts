@@ -1,5 +1,6 @@
 import { prisma } from "../utils/prismaClient";
 import { hashToken } from "../utils/hashToken";
+import * as bcrypt from 'bcrypt';
 
 export function addRefreshTokenToWhitelist({ 
     jti, 
@@ -47,5 +48,9 @@ export function revokeTokens(userId: string) {
             revoked: true
         }
     });
+}
+
+export function checkIfUnencryptedPasswordIsValid(uncryptedPassword: string, cryptedPassword: string) {
+    return bcrypt.compareSync(uncryptedPassword, cryptedPassword)
 }
 
