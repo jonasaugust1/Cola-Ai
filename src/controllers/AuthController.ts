@@ -17,28 +17,26 @@ export class AuthController {
             const user = await findUserByEmail(email)
 
             if (!user) {
-                res.status(404)
-                throw new Error('Usuário não encontrado.')
+                return res.status(404).json('Usuário não encontrado.')
             }
 
             const verifyPass = await bcrypt.compare(password, user.password)
 
             if (!verifyPass) {
-                res.status(400)
-                throw new Error('Usuário ou senha inválidos')
+                return res.status(400).json('Usuário ou senha inválidos')
             }
 
             const token = generateAccessToken(user)
 
             const { password: _, ...userLogin } = user
 
-            return res.status(201).json({
+            return res.json({
                 user: userLogin,
                 token: token
             })
         } catch (error) {
-            res.status(500)
-            throw new Error('Houve algum erro inesperado')
+            console.log(error)
+            return res.status(500).json('Houve algum erro inesperado.')
         }
     }
 
@@ -48,23 +46,20 @@ export class AuthController {
         const { oldPassword, newPassword, email } = req.body
 
         if (!(oldPassword || newPassword)) {
-            res.status(400)
-            throw new Error('Os campos precisam ser preenchidos')
+            return res.status(400).json('Os campos precisam ser preenchidos')
         }
 
         try {
             const user = await findUserByEmail(email)
 
             if (!user) {
-                res.status(404)
-                throw new Error('Usuário não encontrado')
+                return res.status(404).json('Usuário não encontrado')
             }
 
             const uncryptedPasswordIsValid = checkIfUnencryptedPasswordIsValid(oldPassword, newPassword)
 
             if (!uncryptedPasswordIsValid) {
-                res.status(400)
-                throw new Error('As senhas não coincidem')
+                return res.status(400).json('As senhas não coincidem')
             }
 
             prisma.user.update({
@@ -72,14 +67,14 @@ export class AuthController {
                     email
                 },
                 data: {
-                    password: hashToken(newPassword) 
+                    password: hashToken(newPassword)
                 }
             })
 
-            res.status(204).send("Password changed")
+            return res.status(204).send("Password changed")
         } catch (error) {
-            res.status(500)
-            throw new Error('Houve algum erro inesperado')
+            console.log(error)
+            return res.status(500).json('Houve algum erro inesperado.')
         }
     }
 }

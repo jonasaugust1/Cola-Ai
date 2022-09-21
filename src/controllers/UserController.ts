@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { findUserByEmail, findUserById } from '../services/user';
 import { prisma } from '../utils/prismaClient';
+import * as bcrypt from 'bcrypt';
 
 export class UserController {
 
@@ -12,30 +13,29 @@ export class UserController {
             const { email, password } = req.body
 
             if (!email || !password) {
-                res.status(400)
-                throw new Error('Você deve fornecer um email e uma senha.')
+                return res.status(400).json('Você deve fornecer um email e uma senha.')
             }
 
             const existingUser = await findUserByEmail(email)
 
             if (existingUser) {
-                res.status(400)
-                throw new Error('Email já está em uso.')
+                return res.status(400).json('Email já está em uso.')
             }
+
+            const passwordEncrypted = bcrypt.hashSync(body.password, 10)
 
             const user = await prisma.user.create({
                 data: {
                     name: body.name,
                     email: body.email,
-                    password: body.password
+                    password: passwordEncrypted,
                 }
             })
 
             return res.status(201).json(user)
 
         } catch (error) {
-            res.status(500)
-            throw new Error('Houve algum problema inesperado.')
+            return res.status(500).json('Houve algum problema inesperado.')
         }
     }
 
@@ -59,14 +59,13 @@ export class UserController {
             const user = await findUserById(id)
 
             if (!user) {
-                res.status(404)
-                throw new Error('Usuário não encontrado.')
+                res.status(404).json('Usuário não encontrado.')
             }
 
             return res.json(user)
         } catch (error) {
-            res.status(500)
-            throw new Error('Houve algum erro inesperado.')
+            console.log(error)
+            return res.status(500).json('Houve algum erro inesperado.')
         }
     }
 
@@ -78,14 +77,13 @@ export class UserController {
             const user = await findUserByEmail(email)
 
             if (!user) {
-                res.status(404)
-                throw new Error('Usuário não encontrado.')
+                res.status(404).json('Usuário não encontrado.')
             }
 
             return res.json(user)
         } catch (error) {
-            res.status(500)
-            throw new Error('Houve algum erro inesperado.')
+            console.log(error)
+            return res.status(500).json('Houve algum erro inesperado.')
         }
     }
 
@@ -97,8 +95,7 @@ export class UserController {
             const user = await findUserById(id)
 
             if (!user) {
-                res.status(404)
-                throw new Error('Usuário não encontrado.')
+                res.status(404).json('Usuário não encontrado.')
             }
 
             const userDeleted = prisma.user.delete({
@@ -110,7 +107,8 @@ export class UserController {
             return res.status(204).json(userDeleted)
 
         } catch (error) {
-            res.status(500).send("Houve algum erro inesperado.")
+            console.log(error)
+            return res.status(500).json('Houve algum erro inesperado.')
         }
     }
 }

@@ -1,44 +1,17 @@
-import express, { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import 'dotenv/config';
-import { findUserByEmail } from '../services/user';
-import { prisma } from '../utils/prismaClient';
+import { Router} from 'express';
+import { UserController } from '../controllers/UserController';
+import { checkAuth } from '../middleware/checkAuth';
 
-const router = express.Router();
+const routes = Router();
 
-router.post('/user', async (req: Request, res: Response) => {
+routes.post('/user', new UserController().createUser)
 
-    const body = req.body
+routes.get('/user', checkAuth, new UserController().listAll)
+routes.get('/user/:id', checkAuth, new UserController().listById)
+routes.get('/user/:email', checkAuth, new UserController().listByEmail)
 
-    try {
-        const { email, password } = req.body
+routes.delete('/user/:id', checkAuth, new UserController().deleteUser)
 
-        if (!email || !password) {
-            res.status(400)
-            throw new Error('Você deve fornecer um email e uma senha.')
-        }
-
-        const existingUser = await findUserByEmail(email)
-
-        if (existingUser) {
-            res.status(400)
-            throw new Error('Email já está em uso.')
-        }
-
-        const user = await prisma.user.create({
-            data: {
-                name: body.name,
-                email: body.email,
-                password: body.password
-            }
-        })
-
-
-    } catch (error) {
-        res.status(500)
-        throw new Error('Houve algum problema inesperado.')
-    }
-})
-
+export default routes
 
 
