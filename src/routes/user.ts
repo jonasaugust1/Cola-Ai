@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import 'dotenv/config';
-import bodyParser from 'body-parser';
 import { findUserByEmail } from '../services/user';
 import { prisma } from '../utils/prismaClient';
 
