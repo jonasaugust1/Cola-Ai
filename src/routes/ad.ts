@@ -9,6 +9,6 @@ routes.post('/ad/:userId', checkAuth, new AdController().create)
 routes.get('/ad', checkAuth, new AdController().listAll)
 
 routes.put('/ad/:id/:categoryId', checkAuth, new AdController().assignCategories)
-// routes.put('/address/:id/:userId', checkAuth, new AddressController().edit)
+routes.put('/ad/:id', checkAuth, new AdController().edit)
 
 export default routes

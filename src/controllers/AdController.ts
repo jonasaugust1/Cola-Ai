@@ -40,7 +40,7 @@ export class AdController {
 
     async assignCategories(req: Request, res: Response) {
 
-        const {id, categoryId} = req.params
+        const { id, categoryId } = req.params
         try {
             const ads = await prisma.ad.update({
                 where: {
@@ -58,7 +58,7 @@ export class AdController {
                 }
             })
 
-            return res.status(204).json({ads})
+            return res.status(204).json({ ads })
         } catch (error) {
             console.log(error)
             return res.status(500).json({ message: 'Houve algum erro inesperado.' })
@@ -80,20 +80,33 @@ export class AdController {
         }
     }
 
-    // async edit(req: Request, res: Response) {
+    async edit(req: Request, res: Response) {
 
-    //     const {id} = req.params
-    //     const {categoryId, ...ad} = req.body
+        const {id} = req.params
+        const body = req.body
 
-    //     try {
-    //         const updatedAd = await prisma.ad.update({
-    //             data: {
+        try {
 
-    //             }
-    //         })
+            const ad = await findAdById(id)
 
-    //     } catch (error) {
-            
-    //     }
-    // }
+            if(!ad) {
+                return res.status(404).json({message: 'Post não encontrado'})
+            }
+            const updatedAd = await prisma.ad.update({
+                where: {
+                    id
+                },
+                data: {
+                    description: body.description,
+                    transaction: body.transaction,
+                    price: body.price,
+                }
+            })
+
+            return res.status(204).json(updatedAd)
+
+        } catch (error) {
+
+        }
+    }
 }

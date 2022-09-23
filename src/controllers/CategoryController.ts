@@ -57,7 +57,11 @@ export class CategoryController {
     async listAll(req: Request, res: Response) {
 
         try {
-            const categories = await prisma.category.findMany()
+            const categories = await prisma.category.findMany({
+                include: {
+                    ads: true
+                }
+            })
             return res.json(categories)
         } catch (error) {
             console.log(error)

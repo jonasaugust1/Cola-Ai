@@ -74,4 +74,5 @@ export class AddressController {
             return res.status(500).json({message: 'Houve algum erro inesperado.'})
         }
     }
+    
 }
