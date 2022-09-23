@@ -11,28 +11,27 @@ datasource db {
 }
 
 model User {
-  id      String   @id @default(uuid())
-  name    String
-  email   String   @unique
+  id       String   @id @default(uuid())
+  name     String   @db.VarChar(50)
+  email    String   @unique
   password String
-  role    Role     @default(USER)
-  address Address?
-  ads     Ad[]
+  role     Role     @default(USER)
+  address  Address?
+  ads      Ad[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-
 model Address {
   id        String   @id @default(uuid())
   userId    String   @unique @default(uuid())
-  zip_code  String
-  street    String
-  district  String
-  city      String
-  state     String
-  country   String
+  zip_code  String   @db.VarChar(10)
+  street    String   @db.VarChar(50)
+  district  String   @db.VarChar(50)
+  city      String   @db.VarChar(50)
+  state     String   @db.VarChar(20)
+  country   String   @db.VarChar(4)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -41,8 +40,8 @@ model Address {
 
 model Category {
   id           String   @id @default(uuid())
-  name         String
-  sub_category String
+  name         String   @db.VarChar(20)
+  sub_category String?  @db.VarChar(20)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -52,9 +51,9 @@ model Category {
 model Ad {
   id          String   @id @default(uuid())
   description String   @db.VarChar(300)
-  userId      String
-  transaction String
-  price       Float
+  userId      String   @default(uuid())
+  transaction String   @db.VarChar(10)
+  price       Float?   @db.Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -66,3 +65,4 @@ enum Role {
   USER
   ADMIN
 }
+

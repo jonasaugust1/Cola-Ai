@@ -40,7 +40,7 @@ export class UserController {
         }
     }
 
-    async listAll(req: Request, res: Response) {
+    async listAllUsers(req: Request, res: Response) {
 
         try {
             const users = await prisma.user.findMany({
@@ -100,7 +100,7 @@ export class UserController {
                 res.status(404).json({ message: 'Usuário não encontrado.' })
             }
 
-            const userDeleted = prisma.user.delete({
+            await prisma.user.delete({
                 where: {
                     id
                 }

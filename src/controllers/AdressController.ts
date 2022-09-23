@@ -1,6 +1,7 @@
 import { prisma } from './../utils/prismaClient';
 import { Request, Response } from "express";
 import { findUserByEmail, findUserById } from "../services/user";
+import { findAddressById } from '../services/address';
 
 export class AddressController {
 
@@ -19,7 +20,7 @@ export class AddressController {
 
             const address = await prisma.address.create({
                 data: {
-                    userId: body.userId,
+                    userId,
                     zip_code: body.zip_code,
                     street: body.street,
                     district: body.district,
@@ -37,7 +38,7 @@ export class AddressController {
         }
     }
 
-    async editAddress(req: Request, res: Response) {
+    async edit(req: Request, res: Response) {
 
         const { id } = req.params
 
@@ -45,26 +46,27 @@ export class AddressController {
 
         try {
 
-            const address = await findUserById(id)
+            const address = await findAddressById(id)
 
             if (!address) {
-                return res.status(404).json({message: 'Usuário não encontrado'})
+                return res.status(404).json({message: 'Endereço não cadastrado cadastrado'})
             }
 
-            const editedAddress = prisma.address.update({
+            await prisma.address.update({
                 where: {
                     id
                 },
                 data: {
                     zip_code: body.zip_code,
-                    street: body.address,
+                    street: body.street,
                     district: body.district,
+                    city: body.city,
                     state: body.state,
                     country: body.country,
                 }
             })
 
-            return res.status(204).json(editedAddress)
+            return res.status(204)
         } catch (error) {
             console.log(error)
             return res.status(500).json({message: 'Houve algum erro inesperado.'})

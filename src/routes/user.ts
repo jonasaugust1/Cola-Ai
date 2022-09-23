@@ -6,7 +6,7 @@ const routes = Router();
 
 routes.post('/user', new UserController().createUser)
 
-routes.get('/user', checkAuth, new UserController().listAll)
+routes.get('/user', checkAuth, new UserController().listAllUsers)
 routes.get('/user/:id', checkAuth, new UserController().listById)
 routes.get('/user/:email', checkAuth, new UserController().listByEmail)
 
