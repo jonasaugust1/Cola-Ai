@@ -12,17 +12,18 @@ export class AddressController {
         try {
             const user = await findUserById(userId)
 
+            console.log(user?.id)
             if (!user) {
-                res.status(404)
-                throw new Error('Usuário não encontrado')
+                return res.status(404).json({message: 'Usuário não encontrado'})
             }
 
             const address = await prisma.address.create({
                 data: {
-                    userId: user.id,
+                    userId: body.userId,
                     zip_code: body.zip_code,
-                    street: body.address,
+                    street: body.street,
                     district: body.district,
+                    city: body.city,
                     state: body.state,
                     country: body.country,
                 }
@@ -31,8 +32,8 @@ export class AddressController {
             return res.status(201).json(address)
 
         } catch (error) {
-            res.status(500)
-            throw new Error('Houve algum erro inesperado.')
+            console.log(error)
+            return res.status(500).json({message: 'Houve algum erro inesperado.'})
         }
     }
 
@@ -47,8 +48,7 @@ export class AddressController {
             const address = await findUserById(id)
 
             if (!address) {
-                res.status(404)
-                throw new Error('Usuário não encontrado')
+                return res.status(404).json({message: 'Usuário não encontrado'})
             }
 
             const editedAddress = prisma.address.update({
@@ -64,11 +64,10 @@ export class AddressController {
                 }
             })
 
-            res.status(204).json(editedAddress)
+            return res.status(204).json(editedAddress)
         } catch (error) {
             console.log(error)
-            res.status(500)
-            throw new Error('Houve algum erro inesperado.')
+            return res.status(500).json({message: 'Houve algum erro inesperado.'})
         }
     }
 }

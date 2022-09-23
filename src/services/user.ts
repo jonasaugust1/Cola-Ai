@@ -1,6 +1,4 @@
 import { prisma } from "../utils/prismaClient";
-import * as bcrypt from 'bcrypt';
-import { User } from "@prisma/client";
 
 export async function findUserByEmail(email: string) {
 
@@ -15,8 +13,11 @@ export async function findUserById(id: string) {
 
     return await prisma.user.findUnique({
         where: {
-            id,
+            id: id,
         },
+        include: {
+            address: true
+        }
     });
 }
 

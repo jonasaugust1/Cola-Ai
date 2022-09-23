@@ -18,28 +18,19 @@ model User {
   role    Role     @default(USER)
   address Address?
   ads     Ad[]
-  refreshTokens RefreshToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model RefreshToken {
-  id          String   @id @unique @default(uuid())
-  hashedToken String
-  userId      String
-  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  revoked     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
 
 model Address {
   id        String   @id @default(uuid())
-  userId    String   @unique
+  userId    String   @unique @default(uuid())
   zip_code  String
   street    String
   district  String
+  city      String
   state     String
   country   String
   createdAt DateTime @default(now())

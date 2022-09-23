@@ -17,13 +17,13 @@ export class AuthController {
             const user = await findUserByEmail(email)
 
             if (!user) {
-                return res.status(404).json('Usuário não encontrado.')
+                return res.status(404).json({message: 'Usuário não encontrado.'})
             }
 
             const verifyPass = await bcrypt.compare(password, user.password)
 
             if (!verifyPass) {
-                return res.status(400).json('Usuário ou senha inválidos')
+                return res.status(400).json({message: 'Usuário ou senha inválidos'})
             }
 
             const token = generateAccessToken(user)
@@ -36,7 +36,7 @@ export class AuthController {
             })
         } catch (error) {
             console.log(error)
-            return res.status(500).json('Houve algum erro inesperado.')
+            return res.status(500).json({message: 'Houve algum erro inesperado.'})
         }
     }
 
@@ -46,20 +46,20 @@ export class AuthController {
         const { oldPassword, newPassword, email } = req.body
 
         if (!(oldPassword || newPassword)) {
-            return res.status(400).json('Os campos precisam ser preenchidos')
+            return res.status(400).json({message: 'Os campos precisam ser preenchidos'})
         }
 
         try {
             const user = await findUserByEmail(email)
 
             if (!user) {
-                return res.status(404).json('Usuário não encontrado')
+                return res.status(404).json({message: 'Usuário não encontrado'})
             }
 
             const uncryptedPasswordIsValid = checkIfUnencryptedPasswordIsValid(oldPassword, newPassword)
 
             if (!uncryptedPasswordIsValid) {
-                return res.status(400).json('As senhas não coincidem')
+                return res.status(400).json({message: 'As senhas não coincidem'})
             }
 
             prisma.user.update({
@@ -71,10 +71,10 @@ export class AuthController {
                 }
             })
 
-            return res.status(204).send("Password changed")
+            return res.status(204).send({message: 'Password changed'})
         } catch (error) {
             console.log(error)
-            return res.status(500).json('Houve algum erro inesperado.')
+            return res.status(500).json({message: 'Houve algum erro inesperado.'})
         }
     }
 }
