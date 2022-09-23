@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { findUserByEmail, findUserById } from '../services/user';
+import { findUserByEmail, findUserById, findUserPosts } from '../services/user';
 import { prisma } from '../utils/prismaClient';
 import * as bcrypt from 'bcrypt';
 
@@ -44,7 +44,7 @@ export class UserController {
 
         try {
             const users = await prisma.user.findMany({
-                include: {address: true}
+                include: { address: true }
             })
             return res.json(users)
         } catch (error) {
@@ -77,6 +77,25 @@ export class UserController {
 
         try {
             const user = await findUserByEmail(email)
+
+            if (!user) {
+                res.status(404).json({ message: 'Usuário não encontrado.' })
+            }
+
+            return res.json(user)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ message: 'Houve algum erro inesperado.' })
+        }
+    }
+
+    async listUserAds(req: Request, res: Response) {
+
+        const { id } = req.params
+
+        try {
+
+            const user = await findUserPosts(id)
 
             if (!user) {
                 res.status(404).json({ message: 'Usuário não encontrado.' })

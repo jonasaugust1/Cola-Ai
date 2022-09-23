@@ -1,6 +1,6 @@
 import { prisma } from './../utils/prismaClient';
 import { Request, Response } from "express";
-import { findUserByEmail, findUserById } from "../services/user";
+import { findUserById } from "../services/user";
 import { findAddressById } from '../services/address';
 
 export class AddressController {
@@ -49,7 +49,7 @@ export class AddressController {
             const address = await findAddressById(id)
 
             if (!address) {
-                return res.status(404).json({message: 'Endereço não cadastrado cadastrado'})
+                return res.status(404).json({message: 'Endereço não cadastrado'})
             }
 
             await prisma.address.update({
@@ -67,6 +67,7 @@ export class AddressController {
             })
 
             return res.status(204)
+
         } catch (error) {
             console.log(error)
             return res.status(500).json({message: 'Houve algum erro inesperado.'})
