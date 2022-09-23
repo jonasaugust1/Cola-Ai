@@ -8,7 +8,7 @@ export class AdController {
     async create(req: Request, res: Response) {
 
         const body = req.body
-        const { userId } = req.params
+        const { userId, id } = req.params
 
         try {
 
@@ -24,11 +24,41 @@ export class AdController {
                     userId,
                     transaction: body.transaction,
                     price: body.price
+                },
+                include: {
+                    categories: true
                 }
             })
 
             return res.status(201).json(ad)
 
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ message: 'Houve algum erro inesperado.' })
+        }
+    }
+
+    async assignCategories(req: Request, res: Response) {
+
+        const {id, categoryId} = req.params
+        try {
+            const ads = await prisma.ad.update({
+                where: {
+                    id
+                },
+                data: {
+                    categories: {
+                        connect: {
+                            id: categoryId
+                        }
+                    }
+                },
+                select: {
+                    categories: true
+                }
+            })
+
+            return res.status(204).json({ads})
         } catch (error) {
             console.log(error)
             return res.status(500).json({ message: 'Houve algum erro inesperado.' })

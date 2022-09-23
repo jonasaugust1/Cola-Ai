@@ -40,7 +40,7 @@ export class AddressController {
 
     async edit(req: Request, res: Response) {
 
-        const { id } = req.params
+        const { id, userId } = req.params
 
         const body = req.body
 
@@ -48,8 +48,8 @@ export class AddressController {
 
             const address = await findAddressById(id)
 
-            if (!address) {
-                return res.status(404).json({message: 'Endereço não cadastrado'})
+            if (!(address || userId)) {
+                return res.status(404).json({message: 'Usuário não encontrado ou Endereço não cadastrado'})
             }
 
             await prisma.address.update({
@@ -57,6 +57,7 @@ export class AddressController {
                     id
                 },
                 data: {
+                    userId,
                     zip_code: body.zip_code,
                     street: body.street,
                     district: body.district,
